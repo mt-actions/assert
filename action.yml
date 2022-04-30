@@ -1,0 +1,37 @@
+name: 'Assert'
+description: 'Compares the two input values using the specified comparison and fails if the comparison is false'
+inputs:
+  comparison:
+    description: 'The comparison to be done. A string with a value in { >, <, ==, <=, >=, != }'
+    required: true
+  expected:
+    required: true
+  actual:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fail if expected == actual
+      if: |
+        (inputs.comparison == '>' || inputs.comparison == '<' || inputs.comparison == '!=') &&
+        (inputs.expected == inputs.actual)
+      uses: actions/github-script@v3
+      with:
+        script: core.setFailed('${{ inputs.expected }} == ${{ inputs.actual }}')
+
+    - name: Fail if expected > actual
+      if: |
+        (inputs.comparison == '<' || inputs.comparison == '==' || inputs.comparison == '<=') &&
+        (inputs.expected > inputs.actual)
+      uses: actions/github-script@v3
+      with:
+        script: core.setFailed('${{ inputs.expected }} > ${{ inputs.actual }}')
+
+    - name: Fail if expected < actual
+      if: |
+        (inputs.comparison == '>' || inputs.comparison == '==' || inputs.comparison == '>=') &&
+        (inputs.expected < inputs.actual)
+      uses: actions/github-script@v3
+      with:
+        script: core.setFailed('${{ inputs.expected }} < ${{ inputs.actual }}')
